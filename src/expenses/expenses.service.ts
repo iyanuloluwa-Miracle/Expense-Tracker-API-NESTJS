@@ -13,8 +13,14 @@ export class ExpensesService {
     private expensesRepository: Repository<Expense>,
   ) {}
 
-  async create(createExpenseDto: CreateExpenseDto, user: User): Promise<Expense> {
-    const expense = this.expensesRepository.create({ ...createExpenseDto, user });
+  async create(
+    createExpenseDto: CreateExpenseDto,
+    user: User,
+  ): Promise<Expense> {
+    const expense = this.expensesRepository.create({
+      ...createExpenseDto,
+      user,
+    });
     return this.expensesRepository.save(expense);
   }
 
@@ -35,5 +41,18 @@ export class ExpensesService {
   async remove(id: string, userId: string): Promise<void> {
     const expense = await this.findOne(id, userId);
     await this.expensesRepository.remove(expense);
+  }
+
+  async updatePaymentStatus(reference: string, status: string): Promise<void> {
+    const expense = await this.expensesRepository.findOne({
+      where: { paystackReference: reference },
+    });
+
+    if (!expense) {
+      throw new NotFoundException('Expense not found');
+    }
+
+    expense.paymentStatus = status;
+    await this.expensesRepository.save(expense);
   }
 }

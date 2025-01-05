@@ -46,4 +46,14 @@ export class Expense {
 
   @Column()
   userId: string;
+
+  @Column({ nullable: true })
+  paystackReference: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['PENDING', 'COMPLETED', 'FAILED'],
+    default: 'PENDING',
+  })
+  paymentStatus: string;
 }
